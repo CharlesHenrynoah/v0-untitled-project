@@ -1,11 +1,12 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Avatar } from "@/components/ui/avatar"
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Paperclip, Send } from "lucide-react"
+import { Search, Paperclip, Send, ArrowLeft } from "lucide-react"
 import "@/app/chat-theme.css"
 import type { Conversation, Message, Participant } from "@/types/shared"
 
@@ -19,7 +20,6 @@ export default function ChauffeurChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [messages, setMessages] = useState<Message[]>([])
   const [participants, setParticipants] = useState<Participant[]>([])
-  const [showParticipants, setShowParticipants] = useState(false)
 
   // Données fictives des conversations
   useEffect(() => {
@@ -70,12 +70,48 @@ export default function ChauffeurChatPage() {
   // Données fictives des messages
   useEffect(() => {
     if (missionId) {
+      // Participants standard pour toutes les conversations
+      const standardParticipants = [
+        {
+          id: "U001",
+          name: "Thomas Dubois",
+          role: "chauffeur",
+          status: "online",
+          avatar: "/abstract-geometric-TD.png",
+        },
+        {
+          id: "U002",
+          name: "Marie Lefevre",
+          role: "gestionnaire",
+          status: "away",
+          lastSeen: "Il y a 1 heure",
+          avatar: "/machine-learning-concept.png",
+        },
+        {
+          id: "U003",
+          name: "Jean Martin",
+          role: "représentant",
+          status: "online",
+          avatar: "/abstract-jm.png",
+        },
+        {
+          id: "U004",
+          name: "Client Entreprise",
+          role: "client",
+          status: "offline",
+          lastSeen: "Il y a 30 minutes",
+          avatar: "/circuit-elements.png",
+        },
+      ]
+
+      setParticipants(standardParticipants)
+
       if (missionId === "M-2023-046") {
         setMessages([
           {
             id: "MSG001",
-            senderId: "U001",
-            senderName: "Thomas Dubois",
+            senderId: "U003",
+            senderName: "Jean Martin",
             senderRole: "Représentant",
             content: "Est-ce que le chauffeur pourrait arriver 15 minutes plus tôt ?",
             timestamp: "2023-05-14T11:05:00",
@@ -84,8 +120,8 @@ export default function ChauffeurChatPage() {
           },
           {
             id: "MSG002",
-            senderId: "U003",
-            senderName: "Sophie Martin",
+            senderId: "U001",
+            senderName: "Thomas Dubois",
             senderRole: "Chauffeur",
             content: "Le chauffeur sera là dans 10 minutes",
             timestamp: "2023-05-14T14:25:00",
@@ -93,41 +129,12 @@ export default function ChauffeurChatPage() {
             isCurrentUser: true,
           },
         ])
-
-        setParticipants([
-          {
-            id: "U001",
-            name: "Thomas Dubois",
-            role: "Représentant",
-            isOnline: true,
-          },
-          {
-            id: "U002",
-            name: "Marie Lefevre",
-            role: "Gestionnaire",
-            isOnline: false,
-            lastSeen: "Il y a 1 heure",
-          },
-          {
-            id: "U003",
-            name: "Sophie Martin",
-            role: "Chauffeur",
-            isOnline: true,
-          },
-          {
-            id: "U004",
-            name: "Client Entreprise",
-            role: "Client",
-            isOnline: false,
-            lastSeen: "Il y a 30 minutes",
-          },
-        ])
       } else if (missionId === "M001") {
         // Messages pour la mission M001
         setMessages([
           {
             id: "MSG003",
-            senderId: "U005",
+            senderId: "U004",
             senderName: "Marie Dupont",
             senderRole: "Responsable groupe",
             content: "Bonjour, nous serons 28 élèves et 3 accompagnateurs pour l'excursion de demain.",
@@ -137,7 +144,7 @@ export default function ChauffeurChatPage() {
           },
           {
             id: "MSG004",
-            senderId: "U003",
+            senderId: "U001",
             senderName: "Thomas Dubois",
             senderRole: "Chauffeur",
             content:
@@ -148,7 +155,7 @@ export default function ChauffeurChatPage() {
           },
           {
             id: "MSG005",
-            senderId: "U005",
+            senderId: "U004",
             senderName: "Marie Dupont",
             senderRole: "Responsable groupe",
             content: "Parfait, merci pour votre ponctualité. Les enfants sont très excités pour cette sortie!",
@@ -157,34 +164,12 @@ export default function ChauffeurChatPage() {
             isCurrentUser: false,
           },
         ])
-
-        setParticipants([
-          {
-            id: "U003",
-            name: "Thomas Dubois",
-            role: "Chauffeur",
-            isOnline: true,
-          },
-          {
-            id: "U005",
-            name: "Marie Dupont",
-            role: "Responsable groupe",
-            isOnline: false,
-            lastSeen: "Il y a 3 heures",
-          },
-          {
-            id: "U006",
-            name: "École Primaire Saint-Michel",
-            role: "Client",
-            isOnline: false,
-          },
-        ])
       } else {
         // Messages par défaut pour les autres conversations
         setMessages([
           {
             id: "MSG001",
-            senderId: "U001",
+            senderId: "U004",
             senderName: "Marie Dubois",
             senderRole: "Responsable groupe",
             content: "Bonjour, pouvez-vous confirmer l'heure de départ pour notre excursion ?",
@@ -194,34 +179,13 @@ export default function ChauffeurChatPage() {
           },
           {
             id: "MSG002",
-            senderId: "U003",
+            senderId: "U001",
             senderName: "Thomas Dubois",
             senderRole: "Chauffeur",
             content: "Bonjour, je serai à l'école à 7h45 pour un départ à 8h00 précises.",
             timestamp: "2023-05-14T10:35:00",
             time: "10:35",
             isCurrentUser: true,
-          },
-        ])
-
-        setParticipants([
-          {
-            id: "U001",
-            name: "Marie Dubois",
-            role: "Responsable groupe",
-            isOnline: true,
-          },
-          {
-            id: "U003",
-            name: "Thomas Dubois",
-            role: "Chauffeur",
-            isOnline: true,
-          },
-          {
-            id: "U004",
-            name: "Groupe Scolaire",
-            role: "Client",
-            isOnline: false,
           },
         ])
       }
@@ -241,7 +205,7 @@ export default function ChauffeurChatPage() {
 
     const newMsg: Message = {
       id: `MSG${Date.now()}`,
-      senderId: "U003",
+      senderId: "U001",
       senderName: "Thomas Dubois",
       senderRole: "Chauffeur",
       content: newMessage,
@@ -262,64 +226,67 @@ export default function ChauffeurChatPage() {
     router.push("/espacechauffeur/chat")
   }
 
-  const toggleParticipants = () => {
-    setShowParticipants(!showParticipants)
-  }
-
   return (
-    <div className="chat-container">
-      <h1 className="text-4xl font-bold p-6">Messagerie</h1>
+    <div className="chat-container bg-gray-900 text-white min-h-screen">
+      <h1 className="text-3xl font-bold p-6">Chat</h1>
 
       {!missionId ? (
         // Vue liste des conversations
-        <div className="chat-card mx-4 mb-4">
+        <div className="chat-card mx-4 mb-4 shadow-lg rounded-xl border border-gray-700 bg-gray-800">
           <div className="p-6">
-            <h2 className="text-3xl font-bold mb-2">Conversations</h2>
-            <p className="text-muted-foreground mb-6">Vos conversations par mission</p>
+            <h2 className="text-2xl font-bold mb-2">Conversations</h2>
+            <p className="text-gray-400 mb-6">Vos conversations par mission</p>
 
             <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Rechercher une conversation..."
-                className="chat-input pl-10 py-6 text-base"
+                className="chat-input pl-10 py-6 text-base border-gray-600 bg-gray-700 focus:border-lime-500 focus:ring-lime-500 text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <div className="flex mb-4 border-b border-border">
-              <button className={`chat-tab ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>
+            <div className="flex mb-4 border-b border-gray-700">
+              <button
+                className={`chat-tab px-4 py-2 font-medium ${activeTab === "all" ? "text-lime-400 border-b-2 border-lime-500" : "text-gray-400 hover:text-white"}`}
+                onClick={() => setActiveTab("all")}
+              >
                 Toutes
               </button>
               <button
-                className={`chat-tab ${activeTab === "unread" ? "active" : ""}`}
+                className={`chat-tab px-4 py-2 font-medium ${activeTab === "unread" ? "text-lime-400 border-b-2 border-lime-500" : "text-gray-400 hover:text-white"}`}
                 onClick={() => setActiveTab("unread")}
               >
                 Non lues
               </button>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-3">
               {filteredConversations.map((conversation) => (
                 <div
                   key={conversation.id}
-                  className={`chat-conversation-item p-4 rounded-lg cursor-pointer`}
+                  className={`chat-conversation-item p-4 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-700 border border-gray-700 hover:border-lime-700 ${conversation.unread > 0 ? "bg-gray-700" : ""}`}
                   onClick={() => handleConversationClick(conversation.missionId)}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <h3 className="font-bold text-lg">{conversation.missionTitle}</h3>
                     <div className="flex items-center">
-                      <span className="text-sm text-muted-foreground">{conversation.date}</span>
-                      {conversation.unread > 0 && <span className="chat-badge ml-2">{conversation.unread}</span>}
+                      <span className="text-sm text-gray-400">{conversation.date}</span>
+                      {conversation.unread > 0 && (
+                        <span className="chat-badge ml-2 bg-lime-500 text-black px-2 py-1 rounded-full text-xs font-bold">
+                          {conversation.unread}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <p className="text-muted-foreground text-sm mb-1">{conversation.missionSubtitle}</p>
-                  <p className="text-base">{conversation.lastMessage}</p>
+                  <p className="text-gray-400 text-sm mb-1">{conversation.missionSubtitle}</p>
+                  <p className="text-base truncate">{conversation.lastMessage}</p>
                 </div>
               ))}
 
               {filteredConversations.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">Aucune conversation trouvée</div>
+                <div className="text-center py-8 text-gray-400 bg-gray-700 rounded-lg">Aucune conversation trouvée</div>
               )}
             </div>
           </div>
@@ -327,57 +294,61 @@ export default function ChauffeurChatPage() {
       ) : (
         // Vue conversation
         <div className="flex flex-col md:flex-row h-[calc(100vh-8rem)] mx-4 gap-4">
-          <div className={`chat-card flex-1 flex flex-col ${showParticipants ? "md:w-2/3" : "w-full"}`}>
-            <div className="p-4 border-b border-border flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl font-bold">
-                  {conversations.find((c) => c.missionId === missionId)?.missionTitle || missionId}
-                </h2>
-                <p className="text-muted-foreground">
-                  {conversations.find((c) => c.missionId === missionId)?.missionSubtitle || ""}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" className="md:hidden" onClick={toggleParticipants}>
-                  Participants
+          <div className="chat-card flex-1 flex flex-col rounded-xl shadow-lg border border-gray-700 bg-gray-800 md:w-2/3">
+            <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-700 rounded-t-xl">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleBackToList}
+                  className="hover:bg-gray-600 text-white p-2 rounded-full"
+                >
+                  <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" onClick={handleBackToList} className="md:hidden">
-                  Retour
-                </Button>
-                <Button variant="outline" onClick={toggleParticipants} className="hidden md:flex">
-                  Participants
-                </Button>
+                <div>
+                  <h2 className="text-2xl font-bold">
+                    {conversations.find((c) => c.missionId === missionId)?.missionTitle || missionId}
+                  </h2>
+                  <p className="text-gray-400">
+                    {conversations.find((c) => c.missionId === missionId)?.missionSubtitle || ""}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-800">
               {messages.map((message) => (
                 <div key={message.id} className="mb-6">
                   <div className="flex items-start gap-3">
                     {!message.isCurrentUser && (
-                      <Avatar className="h-10 w-10 mt-1">
+                      <Avatar className="h-10 w-10 mt-1 border-2 border-gray-600">
                         <AvatarImage src={message.senderAvatar || "/placeholder.svg"} />
-                        <AvatarFallback>{message.senderName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-gray-600 text-white">
+                          {message.senderName.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                     )}
                     <div className={`flex flex-col ${message.isCurrentUser ? "items-end" : "items-start"} flex-1`}>
                       {!message.isCurrentUser && (
                         <div className="flex items-center mb-1">
                           <span className="font-medium">{message.senderName}</span>
-                          <span className="text-xs text-muted-foreground ml-2">• {message.senderRole}</span>
+                          <span className="text-xs text-gray-400 ml-2">• {message.senderRole}</span>
                         </div>
                       )}
                       <div className="flex items-end gap-2">
-                        <div className={`chat-message-bubble ${message.isCurrentUser ? "sent" : "received"}`}>
+                        <div
+                          className={`chat-message-bubble ${message.isCurrentUser ? "bg-lime-500 text-black rounded-tr-none" : "bg-gray-700 text-white rounded-tl-none"} p-3 rounded-2xl shadow-sm max-w-[80%]`}
+                        >
                           {message.content}
                         </div>
-                        <span className="text-xs text-muted-foreground">{message.time}</span>
+                        <span className="text-xs text-gray-400">{message.time}</span>
                       </div>
                     </div>
                     {message.isCurrentUser && (
-                      <Avatar className="h-10 w-10 mt-1">
+                      <Avatar className="h-10 w-10 mt-1 border-2 border-lime-700">
                         <AvatarImage src={message.senderAvatar || "/placeholder.svg"} />
-                        <AvatarFallback>{message.senderName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-lime-600 text-white">
+                          {message.senderName.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                     )}
                   </div>
@@ -385,13 +356,13 @@ export default function ChauffeurChatPage() {
               ))}
             </div>
 
-            <div className="p-4 flex items-center gap-2">
-              <button className="chat-attachment-button">
-                <Paperclip className="h-5 w-5" />
+            <div className="p-4 flex items-center gap-2 bg-gray-700 rounded-b-xl border-t border-gray-600">
+              <button className="chat-attachment-button p-2 rounded-full hover:bg-gray-600 transition-colors">
+                <Paperclip className="h-5 w-5 text-white" />
               </button>
               <Input
                 placeholder="Écrivez votre message..."
-                className="chat-input py-6 text-base"
+                className="chat-input py-6 text-base border-gray-600 bg-gray-800 focus:border-lime-500 focus:ring-lime-500 rounded-full text-white"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -401,46 +372,67 @@ export default function ChauffeurChatPage() {
                   }
                 }}
               />
-              <button className="chat-send-button" onClick={handleSendMessage} disabled={!newMessage.trim()}>
-                <Send className="h-5 w-5" />
+              <button
+                className={`chat-send-button p-3 rounded-full ${newMessage.trim() ? "bg-lime-500 hover:bg-lime-600" : "bg-gray-600"} transition-colors`}
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim()}
+              >
+                <Send className="h-5 w-5 text-black" />
               </button>
             </div>
           </div>
 
-          {(showParticipants || window.innerWidth >= 768) && (
-            <div className="chat-card md:w-1/3 flex flex-col">
-              <div className="p-4 border-b border-border">
-                <h2 className="text-2xl font-bold">Participants</h2>
-                <p className="text-muted-foreground">Membres de cette conversation</p>
-              </div>
+          <div className="chat-card md:w-1/3 flex flex-col rounded-xl shadow-lg border border-gray-700 bg-gray-800">
+            <div className="p-4 border-b border-gray-700 bg-gray-700 rounded-t-xl">
+              <h2 className="text-2xl font-bold">Participants</h2>
+              <p className="text-gray-400">Membres de cette conversation</p>
+            </div>
 
-              <div className="flex-1 overflow-y-auto p-4">
-                <div className="space-y-6">
-                  {participants.map((participant) => (
-                    <div key={participant.id} className="flex items-center gap-3">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={participant.avatar || "/placeholder.svg"} />
-                        <AvatarFallback>{participant.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="font-bold text-lg">{participant.name}</h3>
-                        <p className="text-muted-foreground flex items-center">
-                          {participant.role}
-                          {participant.lastSeen && (
-                            <>
-                              <span className="mx-1">•</span>
-                              <span>{participant.lastSeen}</span>
-                            </>
-                          )}
-                        </p>
-                      </div>
-                      {participant.isOnline && <div className="chat-online-indicator ml-auto"></div>}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-6">
+                {participants.map((participant) => (
+                  <div
+                    key={participant.id}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    <Avatar className="h-12 w-12 border-2 border-gray-600">
+                      <AvatarImage src={participant.avatar || "/placeholder.svg"} />
+                      <AvatarFallback className="bg-gray-600 text-white">{participant.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-bold text-lg">{participant.name}</h3>
+                      <p className="text-gray-400 flex items-center">
+                        {participant.role === "chauffeur"
+                          ? "Chauffeur"
+                          : participant.role === "gestionnaire"
+                            ? "Gestionnaire de flottes"
+                            : participant.role === "représentant"
+                              ? "Responsable entreprise"
+                              : participant.role === "client"
+                                ? "Client"
+                                : participant.role}
+                        {participant.status !== "online" && participant.lastSeen && (
+                          <>
+                            <span className="mx-1">•</span>
+                            <span>{participant.lastSeen}</span>
+                          </>
+                        )}
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <div
+                      className={`ml-auto h-3 w-3 rounded-full ${
+                        participant.status === "online"
+                          ? "bg-green-500"
+                          : participant.status === "away"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+                      } ring-2 ring-gray-800`}
+                    ></div>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

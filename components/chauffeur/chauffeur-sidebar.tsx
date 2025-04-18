@@ -36,13 +36,6 @@ export function ChauffeurSidebar() {
 
   return (
     <div className="w-64 bg-gray-100 dark:bg-gray-800 h-full flex flex-col">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <Link href="/espacechauffeur">
-          <div className="flex items-center justify-center">
-            <img src="/abstract-geometric-logo.png" alt="Logo" className="h-10 w-10" />
-          </div>
-        </Link>
-      </div>
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
           {navItems.map((item) => (

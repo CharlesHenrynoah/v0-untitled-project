@@ -29,9 +29,9 @@ export default function ChatParticipants({ participants }: ChatParticipantsProps
       case "chauffeur":
         return "Chauffeur"
       case "gestionnaire":
-        return "Gestionnaire"
+        return "Gestionnaire de flottes"
       case "représentant":
-        return "Représentant"
+        return "Responsable entreprise"
       default:
         return role.charAt(0).toUpperCase() + role.slice(1)
     }
@@ -40,9 +40,9 @@ export default function ChatParticipants({ participants }: ChatParticipantsProps
   // Trier les participants par rôle
   const sortedParticipants = [...participants].sort((a, b) => {
     const roleOrder: Record<string, number> = {
-      représentant: 1,
+      chauffeur: 1,
       gestionnaire: 2,
-      chauffeur: 3,
+      représentant: 3,
       client: 4,
     }
     return (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)

@@ -3,91 +3,193 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { LayoutDashboard, Calendar, MessageSquare, Users, Settings, User, LogOut, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  LayoutDashboard,
-  Calendar,
-  MessageSquare,
-  Users,
-  FileText,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-export default function Sidebar() {
+interface SidebarProps {
+  userRole?: "chauffeur" | "gestionnaireflotte" | "client"
+}
+
+export default function Sidebar({ userRole = "gestionnaireflotte" }: SidebarProps) {
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed)
+  // Déterminer les liens de navigation en fonction du rôle
+  const getNavLinks = () => {
+    switch (userRole) {
+      case "chauffeur":
+        return [
+          {
+            href: "/espacechauffeur",
+            icon: <LayoutDashboard className="h-5 w-5" />,
+            label: "Tableau de bord",
+          },
+          {
+            href: "/espacechauffeur/missions",
+            icon: <Calendar className="h-5 w-5" />,
+            label: "Mes missions",
+          },
+          {
+            href: "/espacechauffeur/chat",
+            icon: <MessageSquare className="h-5 w-5" />,
+            label: "Chat",
+          },
+          {
+            href: "/espacechauffeur/profil",
+            icon: <User className="h-5 w-5" />,
+            label: "Mon profil",
+          },
+          {
+            href: "/espacechauffeur/parametres",
+            icon: <Settings className="h-5 w-5" />,
+            label: "Paramètres",
+          },
+        ]
+      case "client":
+        return [
+          {
+            href: "/client",
+            icon: <LayoutDashboard className="h-5 w-5" />,
+            label: "Tableau de bord",
+          },
+          {
+            href: "/client/reservations",
+            icon: <Calendar className="h-5 w-5" />,
+            label: "Réservations",
+          },
+          {
+            href: "/client/messages",
+            icon: <MessageSquare className="h-5 w-5" />,
+            label: "Messages",
+          },
+          {
+            href: "/client/profil",
+            icon: <User className="h-5 w-5" />,
+            label: "Mon profil",
+          },
+          {
+            href: "/client/parametres",
+            icon: <Settings className="h-5 w-5" />,
+            label: "Paramètres",
+          },
+        ]
+      case "gestionnaireflotte":
+      default:
+        return [
+          {
+            href: "/gestionnaireflotte/dashboard",
+            icon: <LayoutDashboard className="h-5 w-5" />,
+            label: "Tableau de bord",
+          },
+          {
+            href: "/gestionnaireflotte/missions",
+            icon: <Calendar className="h-5 w-5" />,
+            label: "Missions",
+          },
+          {
+            href: "/gestionnaireflotte/flottes",
+            icon: <Users className="h-5 w-5" />,
+            label: "Flottes",
+          },
+          {
+            href: "/gestionnaireflotte/chat",
+            icon: <MessageSquare className="h-5 w-5" />,
+            label: "Chat",
+          },
+          {
+            href: "/gestionnaireflotte/profil",
+            icon: <User className="h-5 w-5" />,
+            label: "Profil",
+          },
+          {
+            href: "/gestionnaireflotte/parametres",
+            icon: <Settings className="h-5 w-5" />,
+            label: "Paramètres",
+          },
+        ]
+    }
   }
 
-  // Modifier le tableau de navigation pour utiliser les nouveaux chemins
-  const navigation = [
-    { name: "Tableau de bord", href: "/espacererepresentantentreprise/dashboard", icon: LayoutDashboard },
-    { name: "Mes Missions", href: "/espacererepresentantentreprise/missions", icon: Calendar },
-    { name: "Chat", href: "/espacererepresentantentreprise/chat", icon: MessageSquare },
-    { name: "Mes Flottes", href: "/espacererepresentantentreprise/flottes", icon: Users },
-    { name: "Mon Profil", href: "/espacererepresentantentreprise/profil", icon: FileText },
-    { name: "Paramètres", href: "/espacererepresentantentreprise/parametres", icon: Settings },
-  ]
+  const navLinks = getNavLinks()
 
   return (
-    <div
-      className={cn(
-        "relative flex h-full flex-col border-r border-gray-200 bg-navy-950 transition-all duration-300",
-        collapsed ? "w-16" : "w-64",
-      )}
-    >
-      <div className="flex h-16 items-center justify-center border-b border-navy-800 px-4">
-        {!collapsed ? (
-          <span className="text-xl font-bold text-lime-400">NEOTRAVEL</span>
-        ) : (
-          <span className="text-xl font-bold text-lime-400">NT</span>
-        )}
-      </div>
-
-      <button
-        onClick={toggleSidebar}
-        className="absolute -right-3 top-20 flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-100"
+    <>
+      {/* Bouton de menu mobile */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed left-4 top-4 z-50 md:hidden"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
-      </button>
+        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </Button>
 
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="space-y-1 px-2">
-          {navigation.map((item) => (
+      {/* Sidebar pour mobile */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 w-64 transform bg-white transition-transform duration-200 ease-in-out dark:bg-gray-800 md:relative md:translate-x-0",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <div className="flex h-full flex-col">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "group flex items-center rounded-md px-2 py-2 text-sm font-medium",
-                pathname === item.href
-                  ? "bg-navy-800 text-lime-400"
-                  : "text-gray-300 hover:bg-navy-800 hover:text-lime-400",
-                collapsed ? "justify-center" : "",
-              )}
+              href={
+                userRole === "chauffeur"
+                  ? "/espacechauffeur"
+                  : userRole === "client"
+                    ? "/client"
+                    : "/gestionnaireflotte"
+              }
             >
-              <item.icon className={cn("h-5 w-5 flex-shrink-0", collapsed ? "" : "mr-3")} />
-              {!collapsed && <span>{item.name}</span>}
+              <div className="flex items-center justify-center">
+                <img src="/abstract-geometric-logo.png" alt="Logo" className="h-10 w-10" />
+                <span className="ml-2 text-xl font-bold text-navy-900 dark:text-white">
+                  {userRole === "chauffeur"
+                    ? "Espace Chauffeur"
+                    : userRole === "client"
+                      ? "Espace Client"
+                      : "Gestionnaire Flottes"}
+                </span>
+              </div>
             </Link>
-          ))}
-        </nav>
-      </div>
+          </div>
 
-      <div className="border-t border-navy-800 p-4">
-        <button
-          className={cn(
-            "group flex w-full items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-navy-800 hover:text-lime-400",
-            collapsed ? "justify-center" : "",
-          )}
-        >
-          <LogOut className={cn("h-5 w-5 flex-shrink-0", collapsed ? "" : "mr-3")} />
-          {!collapsed && <span>Déconnexion</span>}
-        </button>
+          <nav className="flex-1 space-y-1 px-2 py-4">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-lime-100 text-lime-700 dark:bg-lime-900 dark:text-lime-100"
+                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700",
+                  )}
+                >
+                  {link.icon}
+                  <span className="ml-3">{link.label}</span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          <div className="border-t border-gray-200 p-4 dark:border-gray-700">
+            <Button variant="outline" className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700">
+              <LogOut className="mr-2 h-5 w-5" />
+              Déconnexion
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
