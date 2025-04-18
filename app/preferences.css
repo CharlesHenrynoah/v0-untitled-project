@@ -1,0 +1,85 @@
+/* Tailles de police */
+.text-size-small {
+  --font-size-base: 0.875rem;
+  --font-size-sm: 0.75rem;
+  --font-size-lg: 1rem;
+  --font-size-xl: 1.125rem;
+  --font-size-2xl: 1.25rem;
+  --font-size-3xl: 1.5rem;
+}
+
+.text-size-medium {
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+}
+
+.text-size-large {
+  --font-size-base: 1.125rem;
+  --font-size-sm: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 1.875rem;
+  --font-size-3xl: 2.25rem;
+}
+
+/* Application des tailles de police */
+body {
+  font-size: var(--font-size-base);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm) !important;
+}
+
+.text-base {
+  font-size: var(--font-size-base) !important;
+}
+
+.text-lg {
+  font-size: var(--font-size-lg) !important;
+}
+
+.text-xl {
+  font-size: var(--font-size-xl) !important;
+}
+
+.text-2xl {
+  font-size: var(--font-size-2xl) !important;
+}
+
+.text-3xl {
+  font-size: var(--font-size-3xl) !important;
+}
+
+/* Mode compact */
+.compact-mode .card {
+  padding: 0.75rem !important;
+}
+
+.compact-mode .p-4 {
+  padding: 0.75rem !important;
+}
+
+.compact-mode .p-6 {
+  padding: 1rem !important;
+}
+
+.compact-mode .space-y-4 {
+  margin-top: 0.75rem !important;
+}
+
+.compact-mode .space-y-6 {
+  margin-top: 1rem !important;
+}
+
+.compact-mode .gap-4 {
+  gap: 0.75rem !important;
+}
+
+.compact-mode .gap-6 {
+  gap: 1rem !important;
+}
