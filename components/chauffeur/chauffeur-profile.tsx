@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, MapPin, Phone, Mail, Building, FileText, Award, Save, X } from "lucide-react"
+import { Calendar, MapPin, Phone, Mail, Building, Award, Save, X, Upload } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,6 +30,9 @@ export function ChauffeurProfile() {
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
   const [errors, setErrors] = useState<ValidationErrors>({})
+
+  // État pour l'édition des certifications uniquement
+  const [isEditingCertifications, setIsEditingCertifications] = useState(false)
 
   // État pour le formulaire d'ajout de certification
   const [newCertification, setNewCertification] = useState<Certification>({
@@ -144,6 +147,26 @@ export function ChauffeurProfile() {
     }))
   }
 
+  // Fonction pour gérer le changement d'avatar
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        setChauffeurData((prev) => ({
+          ...prev,
+          avatar: event.target?.result as string,
+        }))
+
+        toast({
+          title: "Photo mise à jour",
+          description: "Votre photo de profil a été mise à jour avec succès.",
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   // Fonction pour ajouter une nouvelle certification
   const handleAddCertification = () => {
     // Valider les champs
@@ -171,6 +194,9 @@ export function ChauffeurProfile() {
       issuer: "",
       date: new Date().toISOString().split("T")[0],
     })
+
+    // Fermer le mode d'édition des certifications
+    setIsEditingCertifications(false)
 
     toast({
       title: "Certification ajoutée",
@@ -218,10 +244,26 @@ export function ChauffeurProfile() {
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-            <Avatar className="w-24 h-24 border-2 border-primary">
-              <AvatarImage src={chauffeurData.avatar || "/placeholder.svg"} alt={chauffeurData.name} />
-              <AvatarFallback>{chauffeurData.name.charAt(0)}</AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="w-24 h-24 border-2 border-primary">
+                <AvatarImage src={chauffeurData.avatar || "/placeholder.svg"} alt={chauffeurData.name} />
+                <AvatarFallback>{chauffeurData.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-2 -right-2">
+                <label htmlFor="avatar-upload" className="cursor-pointer">
+                  <div className="bg-primary text-white p-1.5 rounded-full hover:bg-primary/90 transition-colors">
+                    <Upload className="h-4 w-4" />
+                  </div>
+                </label>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
+            </div>
 
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -586,7 +628,16 @@ export function ChauffeurProfile() {
         <TabsContent value="certifications">
           <Card>
             <CardHeader>
-              <CardTitle>Certifications et formations</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Certifications et formations</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditingCertifications(!isEditingCertifications)}
+                >
+                  {isEditingCertifications ? "Annuler" : "Ajouter une certification"}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -605,7 +656,7 @@ export function ChauffeurProfile() {
                   </div>
                 ))}
 
-                {isEditing && (
+                {isEditingCertifications && (
                   <div className="p-4 border rounded-md border-dashed">
                     <div className="space-y-3">
                       <h3 className="font-medium">Ajouter une certification</h3>
@@ -640,18 +691,16 @@ export function ChauffeurProfile() {
                           onChange={handleCertInputChange}
                         />
                       </div>
-                      <Button variant="outline" className="w-full" onClick={handleAddCertification}>
-                        Ajouter
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button variant="outline" className="w-full" onClick={() => setIsEditingCertifications(false)}>
+                          Annuler
+                        </Button>
+                        <Button className="w-full" onClick={handleAddCertification}>
+                          Ajouter
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                )}
-
-                {!isEditing && (
-                  <Button variant="outline" className="w-full" onClick={() => setIsEditing(true)}>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Ajouter une certification
-                  </Button>
                 )}
               </div>
             </CardContent>

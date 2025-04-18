@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { useTheme } from "@/contexts/theme-context"
 import { Moon, Sun } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
 export default function ChauffeurSettingsPage() {
   const { theme, setTheme } = useTheme()
@@ -145,15 +146,19 @@ export default function ChauffeurSettingsPage() {
             <CardTitle>Compte</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full">
-              Modifier le mot de passe
-            </Button>
-            <Button variant="outline" className="w-full">
-              Exporter mes données
-            </Button>
-            <Button variant="destructive" className="w-full">
-              Déconnexion
-            </Button>
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Mot de passe actuel</Label>
+              <Input id="current-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Nouveau mot de passe</Label>
+              <Input id="new-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
+              <Input id="confirm-password" type="password" />
+            </div>
+            <Button className="w-full">Mettre à jour le mot de passe</Button>
           </CardContent>
         </Card>
       </div>

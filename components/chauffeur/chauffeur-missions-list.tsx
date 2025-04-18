@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -113,45 +113,51 @@ export function ChauffeurMissionsList({
   const [missions, setMissions] = useState<Mission[]>(missionsData)
   const { toast } = useToast()
   const [currentFilter, setFilter] = useState<MissionStatus | "all">(filter)
+  const [filteredMissions, setFilteredMissions] = useState<Mission[]>([])
 
-  const filteredMissions = missions.filter((mission) => {
-    // Filtrer par statut
-    if (currentFilter !== "all" && mission.status !== currentFilter) {
-      return false
-    }
-
-    // Filtrer par recherche
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      return (
-        mission.id.toLowerCase().includes(query) ||
-        mission.departure.toLowerCase().includes(query) ||
-        mission.destination.toLowerCase().includes(query) ||
-        mission.driver.toLowerCase().includes(query) ||
-        mission.type.toLowerCase().includes(query)
-      )
-    }
-
-    // Filtrer par date
-    if (dateFilter !== "all") {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-
-      const missionDate = new Date(mission.date)
-
-      if (dateFilter === "today") {
-        return missionDate.toDateString() === today.toDateString()
-      } else if (dateFilter === "week") {
-        const weekStart = new Date(today)
-        weekStart.setDate(today.getDate() - today.getDay())
-        return missionDate >= weekStart && missionDate <= today
-      } else if (dateFilter === "month") {
-        return missionDate.getMonth() === today.getMonth() && missionDate.getFullYear() === today.getFullYear()
+  // Effet pour filtrer les missions à chaque changement de filtre
+  useEffect(() => {
+    const filtered = missions.filter((mission) => {
+      // Filtrer par statut
+      if (currentFilter !== "all" && mission.status !== currentFilter) {
+        return false
       }
-    }
 
-    return true
-  })
+      // Filtrer par recherche
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        return (
+          mission.id.toLowerCase().includes(query) ||
+          mission.departure.toLowerCase().includes(query) ||
+          mission.destination.toLowerCase().includes(query) ||
+          mission.driver.toLowerCase().includes(query) ||
+          mission.type.toLowerCase().includes(query)
+        )
+      }
+
+      // Filtrer par date
+      if (dateFilter !== "all") {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        const missionDate = new Date(mission.date)
+
+        if (dateFilter === "today") {
+          return missionDate.toDateString() === today.toDateString()
+        } else if (dateFilter === "week") {
+          const weekStart = new Date(today)
+          weekStart.setDate(today.getDate() - today.getDay())
+          return missionDate >= weekStart && missionDate <= today
+        } else if (dateFilter === "month") {
+          return missionDate.getMonth() === today.getMonth() && missionDate.getFullYear() === today.getFullYear()
+        }
+      }
+
+      return true
+    })
+
+    setFilteredMissions(filtered)
+  }, [missions, currentFilter, searchQuery, dateFilter])
 
   const handleStartMission = (id: string) => {
     setMissions((prev) => prev.map((mission) => (mission.id === id ? { ...mission, status: "in-progress" } : mission)))
@@ -283,7 +289,7 @@ export function ChauffeurMissionsList({
                   )}
 
                   {mission.status === "completed" && (
-                    <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="grid grid-cols-2 gap-2 mb-4">
                       <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm">
                         <p className="text-xs text-muted-foreground">Satisfaction</p>
                         <div className="flex items-center">
@@ -298,7 +304,7 @@ export function ChauffeurMissionsList({
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.181h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
                             ))}
                           </div>
@@ -310,10 +316,6 @@ export function ChauffeurMissionsList({
                           <span className="font-semibold text-lime-600">{mission.emissions} kg</span>
                           <span className="text-xs text-muted-foreground ml-1">CO₂</span>
                         </div>
-                      </div>
-                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm">
-                        <p className="text-xs text-muted-foreground">Bénéfice</p>
-                        <span className="font-semibold text-lime-600">{mission.profit} €</span>
                       </div>
                     </div>
                   )}
